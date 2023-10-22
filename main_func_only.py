@@ -215,7 +215,14 @@ def main(stdscr):
                             is_feed = True
                             break
 
+                    # 蛇の体が追加できるようにy座標の数字が小さい順位並べ替える
                     newfood_body_pos_list = sorted(food_body_pos_list, key=lambda x:(x[1], x[0]))
+                    body_pos_num = len(newfood_body_pos_list)
+                    body_pos_idx_cnt = 0
+                    food_body_pos_list[0]
+                    # 体を増やす判定
+                    is_add_body = False
+                    
 
                     for y, text in enumerate(game_wnd_body):
                         new_text = ''
@@ -243,10 +250,16 @@ def main(stdscr):
                                     random_num_x = random.randint(2, 46)
                                     random_num_y = random.randint(1, 8)
                                     food_pos = [random_num_x, random_num_y]
-                                     # 餌の位置と蛇の位置が一緒の場合はこれ以降の処理を行わずwhile文のブロックの先頭に戻る
+                                    # 餌の位置と蛇の頭の位置が一緒の場合はこれ以降の処理を行わずwhile文のブロックの先頭に戻る
                                     if food_pos == snake_pos:
                                         continue
+                                    # 餌の位置と蛇の体の位置が一緒の場合も同様
+                                    elif food_pos in newfood_body_pos_list:
+                                        continue
                                     else:
+                                        # 餌を表示する
+                                        # 体も1つ追加
+                                        is_add_body = True
                                         break
 
                             # 蛇の頭配置判定
@@ -257,17 +270,14 @@ def main(stdscr):
                                 continue
 
                             ## 蛇の体配置判定
-                            # 蛇の体１(頭のすぐ後ろ)
-                            if x == food_body_pos_list[0][0] and \
-                               y == food_body_pos_list[0][1]:
-                                new_text += snake_body_char
-                                continue
-
-                            # 蛇の体２
-                            if x == food_body_pos_list[1][0] and \
-                               y == food_body_pos_list[1][1]:
-                                new_text += snake_body_char
-                                continue
+                            # 配列にアクセスする時の要素数を超えないようにする判定
+                            # NOTE:test_list = [1, 2] -> test_list[2]のような範囲外のアクセスを防ぐ
+                            if body_pos_idx_cnt < body_pos_num:
+                                if x == newfood_body_pos_list[body_pos_idx_cnt][0] and \
+                                   y == newfood_body_pos_list[body_pos_idx_cnt][1]:
+                                    new_text += snake_body_char
+                                    body_pos_idx_cnt += 1
+                                    continue
 
                             # 蛇の餌配置判定
                             if x == food_pos[0] and \
@@ -368,9 +378,12 @@ def main(stdscr):
                             else:
                                 food_body_pos_list[i][0] = priv_food_body_pos_list[i-1][0]
                                 food_body_pos_list[i][1] = priv_food_body_pos_list[i-1][1]
-                            # raise Exception(f'i:{i} food_body_pos_list:{food_body_pos_list[i]}')
-                            stdscr.addstr(f'food_body_pos_list{food_body_pos_list[i]}\n')
-                    
+
+                    # 体を増やす判定処理
+                    priv_body_pos_num = len(priv_food_body_pos_list)
+                    if is_add_body is True:
+                        food_body_pos_list.append(priv_food_body_pos_list[priv_body_pos_num-1])
+
                     # 画面クリア
                     stdscr.clear()
                     # 画面更新
