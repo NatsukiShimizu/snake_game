@@ -4,6 +4,7 @@
 import curses
 import random
 import copy
+import time
 from curses import wrapper
 
 
@@ -41,11 +42,12 @@ def main(stdscr):
 
     # -----------------------------------------
     ### 初期化処理 ###
+    # カーソルを不可視に設定
+    curses.curs_set(0)
     # 画面サイズ取得(表示されているターミナルの表示サイズ)
     horizontal_num_limit, vertical_num_limit = stdscr.getmaxyx()
     # 標準出力画面の情報をクリアする
     stdscr.clear()
-
     # -----------------------------------------
     ### メイン処理 ###
     try:
@@ -72,30 +74,30 @@ def main(stdscr):
 
                 if top_menu_state != 1:
                     # 設定ボタンを点滅
-                    stdscr.addstr('\t\t    <-- ゲームスタート -->\n')
-                    stdscr.addstr('\t\t    <--      設定      -->\n', curses.A_BLINK)
+                    stdscr.addstr(4, 20, '<-- ゲームスタート -->\n')
+                    stdscr.addstr(5, 20, '<--      設定      -->', curses.A_STANDOUT)
                 else:
                     # スタートボタンを点滅
-                    stdscr.addstr('\t\t    <-- ゲームスタート -->\n', curses.A_BLINK)
-                    stdscr.addstr('\t\t    <--      設定      -->\n')
-
+                    stdscr.addstr(4, 20, '<-- ゲームスタート -->\n', curses.A_STANDOUT)
+                    stdscr.addstr(5, 20, '<--      設定      -->\n')
+                
                 # 画面更新
                 stdscr.refresh()
 
                 # キー入力待ち
-                key = stdscr.getkey()
+                key = stdscr.getch()
 
                 # エンター入力で
-                if key == '\n':
+                if key == 10:
                     # TOP画面を終了
                     break
-                elif key == 'KEY_UP':
+                elif key == 259:
                     top_menu_state = 1
-                elif key == 'KEY_DOWN':
+                elif key == 258:
                     top_menu_state = 2
                 else:
                     pass
-                
+
                 # 画面クリア
                 stdscr.clear()
 
@@ -179,8 +181,11 @@ def main(stdscr):
                 is_feed = False
                 # ゲームオーバー判定フラグ
                 is_game_over = False
+                # カーソルの方向
+                cusor_direction_num = 261
 
                 # ゲーム画面表示ループ処理
+                stdscr.nodelay(True)
                 while True:
                     game_wnd_body = [
                         '\t-----------------------------------------------\n',
@@ -300,7 +305,9 @@ def main(stdscr):
                         stdscr.addstr(text)
 
                     # キー入力待ち
-                    key = stdscr.getkey()
+                    key = stdscr.getch()
+                    if key == -1:
+                        key = cusor_direction_num
 
                     # キー入力で移動
                     # 体が動かせるか動かせないかを判断するフラグ
@@ -308,7 +315,8 @@ def main(stdscr):
                     is_move = False
                     priv_snake_pos = copy.deepcopy(snake_pos)
                     priv_food_body_pos_list = copy.deepcopy(food_body_pos_list)
-                    if key == 'KEY_UP':
+                    # if key == 'KEY_UP':
+                    if key == 259:
                         # snake_pos[1]は蛇の位置のy座標を示す
                         # snake_posのy座標が1以下の場合は1で設定し、体が動かないようにFalseに設定
                         if snake_pos[1] <= 1:
@@ -319,8 +327,10 @@ def main(stdscr):
                         else:
                             snake_pos[1] = snake_pos[1] - 1
                             is_move = True
+                        cusor_direction_num = 259
 
-                    elif key == 'KEY_DOWN':
+                    # elif key == 'KEY_DOWN':
+                    elif key == 258:
                         # snake_pos[1]は蛇の位置のy座標を示す
                         # snake_posのy座標が8以上の場合は8で設定し、体が動かないようにFalseに設定
                         if 8 <= snake_pos[1]:
@@ -331,8 +341,10 @@ def main(stdscr):
                         else:
                             snake_pos[1] = snake_pos[1] + 1
                             is_move = True
+                        cusor_direction_num = 258
 
-                    elif key == 'KEY_LEFT':
+                    # elif key == 'KEY_LEFT':
+                    elif key == 260:
                         # snake_pos[0]は蛇の位置のx座標を示す
                         # snake_posのx座標が2以下の場合は2で設定し、体が動かないようにFalseに設定
                         if snake_pos[0] <= 2:
@@ -343,8 +355,10 @@ def main(stdscr):
                         else:
                             snake_pos[0] = snake_pos[0] - 1
                             is_move = True
+                        cusor_direction_num = 260
 
-                    elif key == 'KEY_RIGHT':
+                    # elif key == 'KEY_RIGHT':
+                    elif key == 261:
                         # snake_pos[0]は蛇の位置のx座標を示す
                         # snake_posのx座標が46以上の場合は46で設定し、体が動かないようにFalseに設定
                         if 46 <= snake_pos[0]:
@@ -355,9 +369,12 @@ def main(stdscr):
                         else:
                             snake_pos[0] = snake_pos[0] + 1
                             is_move = True
+                        cusor_direction_num = 261
 
-                    elif key == '\n':
-                        # NOTE: 暫定てエンターキー入力で終了
+                    # elif key == '\n':
+                    elif key == 27:
+                        # NOTE: [ESC]キーで終了
+                        stdscr.nodelay(False)
                         break
                     # 上記で指定したキー以外が入力されるとここの処理に入る
                     else:
@@ -385,9 +402,11 @@ def main(stdscr):
                         food_body_pos_list.append(priv_food_body_pos_list[priv_body_pos_num-1])
 
                     # 画面クリア
+                    time.sleep(0.5)
                     stdscr.clear()
                     # 画面更新
                     stdscr.refresh()
+                    
 
                 break
 
@@ -422,90 +441,6 @@ def main(stdscr):
                     # 画面クリア
                     stdscr.clear()
                 break
-
-            # -----------------------------------------
-            ### 入力処理 ###
-            # ユーザーからの入力を受け付けるループ
-            while True:
-                key = stdscr.getkey()
-                # keyの値が改行コードだったら
-                if key == '\n':
-                    break
-
-                else:
-                    text += key
-
-            # 確認用
-            # stdscr.addstr(0,0,str(text))
-            
-
-            # -----------------------------------------
-            ### アプリ画面作成処理 ###
-            # NOTE: text = '100 50' のようなデータが想定
-            horizontal_num, vertical_num = map(int, text.split())
-            # stdscr.addstr(0,0,str(horizontal_num))
-            # stdscr.addstr(1,0,str(vertical_num))
-
-            # # 先頭
-            # for i in range(horizontal_num):
-            #     stdscr.addstr(0,i,str(horizontal_frame))
-            #     stdscr.refresh()
-
-            # # 左横
-            # for i in range(vertical_num-2):
-            #     stdscr.addstr(i+1,0,str(vertical_frame))
-            #     stdscr.refresh()
-            
-            # # 右横
-            # for i in range(vertical_num-2):
-            #     stdscr.addstr(i+1,horizontal_num-1,str(vertical_frame))
-            #     stdscr.refresh()
-
-            # # 最下部
-            # for i in range(horizontal_num):
-            #     stdscr.addstr(vertical_num-1,i,str(horizontal_frame))
-            #     stdscr.refresh()
-
-            ### 画面サイズを取得して画面範囲外エラー発生を防ぐ
-            stdscr_y, stdscr_x = stdscr.getmaxyx()
-
-            stdscr.addstr(f'{horizontal_frame*horizontal_num}\n')
-            # stdscr.addstr(f'{vertical_frame}{" "*(horizontal_num-2)}{vertical_frame}\n')
-            for i in range(3):
-                stdscr.addstr(f'{vertical_frame}{" "*(horizontal_num-2)}{vertical_frame}\n')
-
-            ### 画面サイズ表示
-            stdscr.addstr(f'x:{stdscr_x} y {stdscr_y}\n')
-
-            stdscr.refresh()
-
-            
-
-            # # 横文字作成
-            # horizontal = horizontal_frame * horizontal_num
-            # stdscr.addstr(0,0,str(horizontal))
-            # stdscr.refresh()
-            
-
-            # # 縦文字作成
-            # vertical =  vertical_frame * (vertical_num-2)
-            # stdscr.addstr(1,0,str(vertical))
-            # stdscr.refresh()
-            # stdscr.addstr(1,horizontal_num-1,str(vertical))
-            # stdscr.refresh()
-
-            # stdscr.addstr(49,0,str(horizontal))
-            # stdscr.refresh()
-
-            stdscr.getkey()
-            stdscr.clear()
-            text = ''
-            
-            ### 処理終了位置 ###
-
-            # 最後に標準出力画面に入力情報を反映させる
-            # NOTE:最低限絶対に必要
-            stdscr.refresh()
 
     except curses.error:
         print('異常終了')
