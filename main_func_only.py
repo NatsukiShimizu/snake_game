@@ -39,6 +39,8 @@ def main(stdscr):
     snake_pos = [22, 4]
     # 蛇の餌位置(x, y)
     food_pos = [0, 0]
+    # ゲームの速度設定用
+    speed = 1
 
     # -----------------------------------------
     ### 初期化処理 ###
@@ -151,7 +153,7 @@ def main(stdscr):
                     '\t\t<--      下移動 ↓ キー     -->\n',
                     '\t\t<--      左移動 ← キー     -->\n',
                     '\t\t<--      右移動 → キー     -->\n',
-                    '\t\t<--        ESCで終了       -->\n',
+                    '\t\t<--     ESC,Enterで終了    -->\n',
                     '\n'
                 ]
                 game_over_wnd = [
@@ -265,6 +267,7 @@ def main(stdscr):
                                         # 餌を表示する
                                         # 体も1つ追加
                                         is_add_body = True
+                                        speed *= 1.1
                                         break
 
                             # 蛇の頭配置判定
@@ -372,10 +375,11 @@ def main(stdscr):
                         cusor_direction_num = 261
 
                     # elif key == '\n':
-                    elif key == 27:
-                        # NOTE: [ESC]キーで終了
+                    elif key == 10 or key == 27:
+                        # NOTE: [ESC], [Enter]キーで終了
                         stdscr.nodelay(False)
                         break
+
                     # 上記で指定したキー以外が入力されるとここの処理に入る
                     else:
                         # NOTE: デバック用
@@ -401,13 +405,12 @@ def main(stdscr):
                     if is_add_body is True:
                         food_body_pos_list.append(priv_food_body_pos_list[priv_body_pos_num-1])
 
+                    # 蛇の速度設定
+                    time.sleep(0.5 / speed)
                     # 画面クリア
-                    time.sleep(0.5)
                     stdscr.clear()
                     # 画面更新
                     stdscr.refresh()
-                    
-
                 break
 
             # 設定画面表示
