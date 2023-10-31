@@ -142,10 +142,53 @@ class TopWindow:
 class GameWindow:
     """ゲーム画面クラス
     """
-    def game_window(self) -> int:
+    def __init__(self) -> None:
+        """コンストラクタ
+        """
+        self.window_state = 2
+        # ゲーム画面文字列
 
-        if self.window_state == 2:
-            stdscr.addstr("text")
+        self.game_wnd_header = [
+            '\n',
+            '\n',
+            '\t<<<<            スネークゲーム             >>>>\n'
+        ]
+
+        self.game_wnd_body = [
+            '\t-----------------------------------------------\n',
+            '\t|                                             |\n',
+            '\t|                                             |\n',
+            '\t|                                             |\n',
+            '\t|                                             |\n',
+            '\t|                                             |\n',
+            '\t|                                             |\n',
+            '\t|                                             |\n',
+            '\t|                                             |\n',
+            '\t-----------------------------------------------\n'
+        ]
+
+        self.game_wnd_footer = [
+            '\n',
+            '\t\t<--      上移動 ↑ キー     -->\n',
+            '\t\t<--      下移動 ↓ キー     -->\n',
+            '\t\t<--      左移動 ← キー     -->\n',
+            '\t\t<--      右移動 → キー     -->\n',
+            '\t\t<--     ESC,Enterで終了    -->\n',
+            '\n'
+        ]
+
+        self.game_over_wnd = [
+            '\t-----------------------------------------------\n',
+            '\t|                                             |\n',
+            '\t|                                             |\n',
+            '\t|                                             |\n',
+            '\t|                  GAME OVER                  |\n',
+            '\t|                                             |\n',
+            '\t|                                             |\n',
+            '\t|                                             |\n',
+            '\t|                                             |\n',
+            '\t-----------------------------------------------\n'
+        ]
 
 class SettingWindow:
     """設定画面クラス
