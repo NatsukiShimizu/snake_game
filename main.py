@@ -190,11 +190,43 @@ class GameWindow:
             '\t-----------------------------------------------\n'
         ]
 
+    def get_game_wnd_header(self) -> list:
+        """ゲーム画面のヘッダー情報を取得する
+
+        Returns:
+            list: ゲーム画面のヘッダー情報
+        """
+        return self.game_wnd_header
+    
+    def get_game_wnd_body(self) -> list:
+        """ゲーム画面のボディー情報を取得する
+
+        Returns:
+            list: ゲーム画面のボディー情報
+        """
+        return self.game_wnd_body
+    
+    def get_game_wnd_footer(self) -> list:
+        """ゲーム画面のフッター情報を取得する
+
+        Returns:
+            list: ゲーム画面のフッター情報
+        """
+        return self.game_wnd_footer
+    
+    def get_game_over_wnd(self) -> list:
+        """ゲーム画面のゲームオーバー情報を取得する
+
+        Returns:
+            list: ゲーム画面のゲームオーバー情報
+        """
+        return self.game_over_wnd
+    
+
 class SettingWindow:
     """設定画面クラス
     """
     pass
-
 
 if __name__ == "__main__":
     # 以下のwrapper関数は必ず呼び出す必要がある
