@@ -101,60 +101,83 @@ class WindowStatus:
     def __init__(self) -> None:
         self.window_state = 1
 
-class TopWindow:
+class BaseWindow:
+    """windowクラス(基底クラス)
+        NOTE: 各ウィンドウクラスが継承すべきクラス
+    """
+    def __init__(self, header:list, main_contents:list, footer:list) -> None:
+        """コンストラクタ
+
+        Args:
+            header (list): ヘッダー情報
+            main_contents (list): メインコンテンツ情報
+            footer (list): フッター情報
+        """
+        self.header         = header
+        self.main_contents  = main_contents
+        self.footer         = footer
+
+    def get_header(self) -> list:
+        """ヘッダー情報を取得する
+
+        Returns:
+            list: ヘッダー情報
+        """
+        return self.header
+    
+    def get_main_contents(self) -> list:
+        """メイン情報を取得する
+
+        Returns:
+            list: メイン情報
+        """
+        return self.main_contents
+    
+    def get_footer(self) -> list:
+        """フッター情報を取得する
+
+        Returns:
+            list: フッター情報
+        """
+        return self.footer
+
+class TopWindow(BaseWindow):
     """トップ画面クラス
        TOP画面ボタン選択状態(1:スタートボタン点滅/2:設定ボタン点滅)
     """    
     def __init__(self) -> None:
         """コンストラクタ
         """
-        self.top_menu_state = 1
         # TOP画面文字列
-        self.header_text_list = [
+        self.header_list = [
             '\t===============================================\n',
             '\t<<<<            スネークゲーム             >>>>\n',
             '\t===============================================\n',
             '\n'
         ]
-        
-        self.menu_text_list = [
+
+        self.main_contents_list = [
             '\t\t   <-- ゲームスタート -->\n',
             '\t\t   <--      設定      -->'
         ]
 
-    def get_header(self) -> list:
-        """TOP画面のヘッダー情報を取得する
+        # 親クラス呼び出し
+        super().__init__(self.header_list, self.main_contents_list, [])
 
-        Returns:
-            list: TOP画面のヘッダー情報
-        """
-        return self.header_text_list
-    
-    def get_menu(self) -> list:
-        """TOP画面のメニュー情報を取得する
-
-        Returns:
-            list: TOP画面のメニュー情報
-        """
-        return self.menu_text_list
-
-
-class GameWindow:
+class GameWindow(BaseWindow):
     """ゲーム画面クラス
     """
     def __init__(self) -> None:
         """コンストラクタ
         """
-        self.window_state = 2
         # ゲーム画面文字列
-
-        self.game_wnd_header = [
+        self.header_list = [
             '\n',
             '\n',
             '\t<<<<            スネークゲーム             >>>>\n'
         ]
 
-        self.game_wnd_body = [
+        self.main_contents_list = [
             '\t-----------------------------------------------\n',
             '\t|                                             |\n',
             '\t|                                             |\n',
@@ -167,7 +190,7 @@ class GameWindow:
             '\t-----------------------------------------------\n'
         ]
 
-        self.game_wnd_footer = [
+        self.footer_list = [
             '\n',
             '\t\t<--      上移動 ↑ キー     -->\n',
             '\t\t<--      下移動 ↓ キー     -->\n',
@@ -177,7 +200,7 @@ class GameWindow:
             '\n'
         ]
 
-        self.game_over_wnd = [
+        self.game_over_list = [
             '\t-----------------------------------------------\n',
             '\t|                                             |\n',
             '\t|                                             |\n',
@@ -190,30 +213,9 @@ class GameWindow:
             '\t-----------------------------------------------\n'
         ]
 
-    def get_game_wnd_header(self) -> list:
-        """ゲーム画面のヘッダー情報を取得する
+        # 親クラス呼び出し
+        super().__init__(self.header_list, self.main_contents_list, self.footer_list)
 
-        Returns:
-            list: ゲーム画面のヘッダー情報
-        """
-        return self.game_wnd_header
-    
-    def get_game_wnd_body(self) -> list:
-        """ゲーム画面のボディー情報を取得する
-
-        Returns:
-            list: ゲーム画面のボディー情報
-        """
-        return self.game_wnd_body
-    
-    def get_game_wnd_footer(self) -> list:
-        """ゲーム画面のフッター情報を取得する
-
-        Returns:
-            list: ゲーム画面のフッター情報
-        """
-        return self.game_wnd_footer
-    
     def get_game_over_wnd(self) -> list:
         """ゲーム画面のゲームオーバー情報を取得する
 
