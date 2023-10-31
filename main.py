@@ -51,7 +51,7 @@ class SnakeGame:
                     self.stdscr.addstr(header)
 
                 # TOP画面のメニュー情報取得
-                top_menu = self.top_window.get_menu()
+                top_menu = self.top_window.get_main_contents()
                 for menu in top_menu:
                     self.stdscr.addstr(menu)
 
@@ -222,8 +222,7 @@ class GameWindow(BaseWindow):
         Returns:
             list: ゲーム画面のゲームオーバー情報
         """
-        return self.game_over_wnd
-    
+        return self.game_over_list
 
 class SettingWindow:
     """設定画面クラス
