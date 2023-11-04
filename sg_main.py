@@ -25,12 +25,13 @@ class SnakeGame:
         if stdscr is None:
             raise Exception()
 
-        self.stdscr = stdscr
-        self.input_key_mng = InputKeyManager(stdscr)
-        self.top_window = TopWindow(stdscr)
-        self.game_window = GameWindow(stdscr)
+        self.stdscr         = stdscr
+        self.input_key_mng  = InputKeyManager(stdscr)
+        self.top_window     = TopWindow(stdscr)
+        self.game_window    = GameWindow(stdscr)
+        self.setting_window = SettingWindow(stdscr)
+        self.menu_state     = MenuState.GAME_START
         # self.stdscr = WindowManager(stdscr)
-        self.menu_state = MenuState.GAME_START
         # self.window_state = WindowState.GAME_WINDOW
 
     def initialise(self) -> None:
@@ -49,8 +50,10 @@ class SnakeGame:
             while True:
                 # TOP画面のヘッダー情報取得
                 self.top_window_proc()
-                # TOP画面のヘッダー情報取得
+                # ゲーム画面のヘッダー情報取得
                 self.game_window_proc()
+                # 設定画面のヘッダー情報取得
+                self.setting_window_proc()
 
                 if self.menu_state == MenuState.CLOSE_APP:
                     break
@@ -65,7 +68,6 @@ class SnakeGame:
     def top_window_proc(self) -> None:
         """トップ画面処理
         """
-
         # トップ画面を持続させるためのループ
         while True:
             # TOP画面のヘッダー情報取得
@@ -145,6 +147,40 @@ class SnakeGame:
 
             # 標準出力画面の情報をクリアする
             self.stdscr.clear()
+    
+    def setting_window_proc(self) -> None:
+        """設定画面処理
+        """
+        # 現在のメニュー状態が設定状態じゃなければ以下の処理をスキップ
+        if self.menu_state != MenuState.SETTING:
+            return
+        
+        # 設定画面を持続させるためのループ
+        while True:
+            # ヘッダー情報取得
+            top_header = self.setting_window.get_header()
+            for header in top_header:
+                self.stdscr.addstr(header)
+
+            # 画面更新
+            self.stdscr.refresh()
+            key = self.input_key_mng.getch()
+
+            # エンター/esc入力
+            if key == KeyData.ENTER or key == KeyData.ESC:
+                # 設定画面を終了
+                # 標準出力画面の情報をクリアする
+                self.stdscr.clear()
+                break
+            elif key == KeyData.UP:
+                pass
+            elif key == KeyData.DOWN:
+                pass
+            else:
+                pass
+
+            # 標準出力画面の情報をクリアする
+            self.stdscr.clear()
 
 class KeyData:
     """キーデータクラス
@@ -186,14 +222,6 @@ class MenuState:
     CLOSE_APP   = -1
     GAME_START  = 1
     SETTING     = 2
-
-class WindowState:
-    """ 画面メニュークラス(1:TOP画面/2:スタート画面/3:設定画面)
-    NOTE: TOP画面状態で初期化
-    """
-    TOP_WINDOW          = 1
-    GAME_WINDOW         = 2
-    SETTING_WINDOW      = 3
 
 class TopWindow(BaseWindow):
     """トップ画面クラス
@@ -303,11 +331,25 @@ class GameWindow(BaseWindow):
         """
         return self.game_over_list
 
-class SettingWindow:
+class SettingWindow(BaseWindow):
     """設定画面クラス
     """
-    # TBD
-    pass
+    def __init__(self, stdscr) -> None:
+        """コンストラクタ
+
+        Args:
+            stdscr (any): 標準スクリーン
+        """
+        # 設定画面文字列
+        header_list = [
+            '\n',
+            '\n',
+            '\t<<<<                 設定                  >>>>\n'
+        ]
+
+        # 親クラス呼び出し
+        super().__init__(stdscr, header_list, [], [])
+
 
 class WindowManager:
     """画面管理クラス
@@ -343,7 +385,6 @@ class WindowManager:
         
 
 def main(stdscr):
-    curses.curs_set(0)
     ## インスタンス生成 ###
     snake_game = SnakeGame(stdscr)
     ### 初期化処理 ###
