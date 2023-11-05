@@ -112,6 +112,8 @@ class SnakeGame:
     def game_window_proc(self) -> None:
         """ゲーム画面処理
         """
+        # インスタンス化
+        snake = Snake()
         # 現在のメニュー状態がゲームスタート状態じゃなければ以下の処理をスキップ
         if self.menu_state != MenuState.GAME_START:
             return
@@ -119,14 +121,27 @@ class SnakeGame:
         # ゲーム画面を持続させるためのループ
         while True:
             # ヘッダー情報取得
-            top_header = self.game_window.get_header()
-            for header in top_header:
-                self.stdscr.addstr(header)
+            header = self.game_window.get_header()
+            for h in header:
+                self.stdscr.addstr(h)
 
             # コンテンツ情報取得
             main_contents = self.game_window.get_main_contents()
-            for contents in main_contents:
-                self.stdscr.addstr(contents)
+            for y, contents in enumerate(main_contents):
+                new_text = ''
+
+                # 1つずつ配列を取り出し、1つの配列の中の1文字を取り出す
+                for x, char in enumerate(contents):
+                    # 蛇の頭配置判定
+                    if x == snake.snake_pos[0] and \
+                       y == snake.snake_pos[1]:
+                        # new_textに追加することにより空白を文字に置き換える
+                        new_text += snake.snake_head_char
+                        continue
+                    else:
+                        new_text += char
+                
+                self.stdscr.addstr(new_text)
 
             # 画面更新
             self.stdscr.refresh()
@@ -158,9 +173,14 @@ class SnakeGame:
         # 設定画面を持続させるためのループ
         while True:
             # ヘッダー情報取得
-            top_header = self.setting_window.get_header()
-            for header in top_header:
-                self.stdscr.addstr(header)
+            header = self.setting_window.get_header()
+            for h in header:
+                self.stdscr.addstr(h)
+
+            # コンテンツ情報取得
+            main_contents = self.setting_window.get_main_contents()
+            for contents in main_contents:
+                self.stdscr.addstr(contents)
 
             # 画面更新
             self.stdscr.refresh()
@@ -185,12 +205,12 @@ class SnakeGame:
 class KeyData:
     """キーデータクラス
     """
-    ENTER = 10
-    ESC = 27
-    DOWN = 258
-    UP = 259
-    LEFT = 260
-    RIGHT = 261
+    ENTER   = 10
+    ESC     = 27
+    DOWN    = 258
+    UP      = 259
+    LEFT    = 260
+    RIGHT   = 261
 
 class InputKeyManager:
     """キー入力管理クラス
@@ -209,12 +229,24 @@ class Speed:
 class Food:
     """蛇の餌クラス
     """
-    pass
+    def __init__(self) -> None:
+        # ゲーム画面の餌部分の作成
+        self.snake_food_char = '+'
 
 class Snake:
     """蛇クラス
     """
-    pass
+    def __init__(self) -> None:
+        # ゲーム画面のボディー部分の作成
+        self.snake_head_char = '@'
+        self.snake_body_char = 'o'
+        # 蛇の位置(x, y)
+        self.snake_pos       = [22, 4]
+        # 蛇の体用変数定義(デフォルトでは蛇の体は頭を含めて3つの部品から構成)
+        self.food_body_pos_list = [
+            [self.snake_pos[0]-1, self.snake_pos[1]],
+            [self.snake_pos[0]-2, self.snake_pos[1]]
+        ]
 
 class MenuState:
     """ステータスクラス
@@ -347,8 +379,21 @@ class SettingWindow(BaseWindow):
             '\t<<<<                 設定                  >>>>\n'
         ]
 
+        main_contents_list = [
+            '\t-----------------------------------------------\n',
+            '\t|                                             |\n',
+            '\t|                                             |\n',
+            '\t|                                             |\n',
+            '\t|                                             |\n',
+            '\t|                                             |\n',
+            '\t|                                             |\n',
+            '\t|                                             |\n',
+            '\t|                                             |\n',
+            '\t-----------------------------------------------\n'
+        ]
+
         # 親クラス呼び出し
-        super().__init__(stdscr, header_list, [], [])
+        super().__init__(stdscr, header_list, main_contents_list, [])
 
 
 class WindowManager:
