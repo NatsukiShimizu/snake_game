@@ -5,9 +5,16 @@ import copy
 import curses
 import random
 import time
+
 from curses import wrapper
 from typing import Any
-from sg_base_window import BaseWindow
+
+from sg_game_window import GameWindow
+from sg_input_key_manager import KeyData, InputKeyManager
+from sg_setting_window import SettingWindow
+from sg_snake import Snake
+from sg_top_window import MenuState, TopWindow
+
 
 class SnakeGame:
     """スネークゲームクラス
@@ -31,8 +38,6 @@ class SnakeGame:
         self.game_window    = GameWindow(stdscr)
         self.setting_window = SettingWindow(stdscr)
         self.menu_state     = MenuState.GAME_START
-        # self.stdscr = WindowManager(stdscr)
-        # self.window_state = WindowState.GAME_WINDOW
 
     def initialise(self) -> None:
         """初期化処理
@@ -202,232 +207,6 @@ class SnakeGame:
             # 標準出力画面の情報をクリアする
             self.stdscr.clear()
 
-class KeyData:
-    """キーデータクラス
-    """
-    ENTER   = 10
-    ESC     = 27
-    DOWN    = 258
-    UP      = 259
-    LEFT    = 260
-    RIGHT   = 261
-
-class InputKeyManager:
-    """キー入力管理クラス
-    """
-    def __init__(self, stdscr) -> None:
-        self.stdscr = stdscr
-
-    def getch(self) -> int:
-        return self.stdscr.getch()
-
-class Speed:
-    """ゲーム速度クラス
-    """
-    pass
-
-class Food:
-    """蛇の餌クラス
-    """
-    def __init__(self) -> None:
-        # ゲーム画面の餌部分の作成
-        self.snake_food_char = '+'
-
-class Snake:
-    """蛇クラス
-    """
-    def __init__(self) -> None:
-        # ゲーム画面のボディー部分の作成
-        self.snake_head_char = '@'
-        self.snake_body_char = 'o'
-        # 蛇の位置(x, y)
-        self.snake_pos       = [22, 4]
-        # 蛇の体用変数定義(デフォルトでは蛇の体は頭を含めて3つの部品から構成)
-        self.food_body_pos_list = [
-            [self.snake_pos[0]-1, self.snake_pos[1]],
-            [self.snake_pos[0]-2, self.snake_pos[1]]
-        ]
-
-class MenuState:
-    """ステータスクラス
-    """
-    CLOSE_APP   = -1
-    GAME_START  = 1
-    SETTING     = 2
-
-class TopWindow(BaseWindow):
-    """トップ画面クラス
-       TOP画面ボタン選択状態(1:スタートボタン点滅/2:設定ボタン点滅)
-    """    
-    def __init__(self, stdscr) -> None:
-        """コンストラクタ
-
-        Args:
-            stdscr (any): 標準スクリーン
-        """
-        # TOP画面文字列
-        header_list = [
-            '\t===============================================\n',
-            '\t<<<<            スネークゲーム             >>>>\n',
-            '\t===============================================\n',
-            '\n'
-        ]
-
-        self.selected_game_start_menu = [
-            [4, 20, '<-- ゲームスタート -->\n', curses.A_STANDOUT],
-            [5, 20, '<--      設定      -->', None]
-        ]
-
-        self.selected_setting_menu = [
-            [4, 20, '<-- ゲームスタート -->\n', None],
-            [5, 20, '<--      設定      -->', curses.A_STANDOUT]
-        ]
-
-        # 親クラス呼び出し
-        super().__init__(stdscr, header_list, [], [])
-
-    def select_menu(self, menu_state: MenuState) -> list:
-        """選択しているメニューをハイライトする
-
-        Args:
-            menu_state (MenuState): ステータス情報
-        """
-        if menu_state == MenuState.GAME_START:
-            return self.selected_game_start_menu
-        
-        else:
-            return self.selected_setting_menu
-
-        
-
-class GameWindow(BaseWindow):
-    """ゲーム画面クラス
-    """
-    def __init__(self, stdscr) -> None:
-        """コンストラクタ
-
-        Args:
-            stdscr (any): 標準スクリーン
-        """
-        # ゲーム画面文字列
-        header_list = [
-            '\n',
-            '\n',
-            '\t<<<<            スネークゲーム             >>>>\n'
-        ]
-
-        main_contents_list = [
-            '\t-----------------------------------------------\n',
-            '\t|                                             |\n',
-            '\t|                                             |\n',
-            '\t|                                             |\n',
-            '\t|                                             |\n',
-            '\t|                                             |\n',
-            '\t|                                             |\n',
-            '\t|                                             |\n',
-            '\t|                                             |\n',
-            '\t-----------------------------------------------\n'
-        ]
-
-        footer_list = [
-            '\n',
-            '\t\t<--      上移動 ↑ キー     -->\n',
-            '\t\t<--      下移動 ↓ キー     -->\n',
-            '\t\t<--      左移動 ← キー     -->\n',
-            '\t\t<--      右移動 → キー     -->\n',
-            '\t\t<--     ESC,Enterで終了    -->\n',
-            '\n'
-        ]
-
-        self.game_over_list = [
-            '\t-----------------------------------------------\n',
-            '\t|                                             |\n',
-            '\t|                                             |\n',
-            '\t|                                             |\n',
-            '\t|                  GAME OVER                  |\n',
-            '\t|                                             |\n',
-            '\t|                                             |\n',
-            '\t|                                             |\n',
-            '\t|                                             |\n',
-            '\t-----------------------------------------------\n'
-        ]
-
-        # 親クラス呼び出し
-        super().__init__(stdscr, header_list, main_contents_list, footer_list)
-
-    def get_game_over_wnd(self) -> list:
-        """ゲーム画面のゲームオーバー情報を取得する
-
-        Returns:
-            list: ゲーム画面のゲームオーバー情報
-        """
-        return self.game_over_list
-
-class SettingWindow(BaseWindow):
-    """設定画面クラス
-    """
-    def __init__(self, stdscr) -> None:
-        """コンストラクタ
-
-        Args:
-            stdscr (any): 標準スクリーン
-        """
-        # 設定画面文字列
-        header_list = [
-            '\n',
-            '\n',
-            '\t<<<<                 設定                  >>>>\n'
-        ]
-
-        main_contents_list = [
-            '\t-----------------------------------------------\n',
-            '\t|                                             |\n',
-            '\t|                                             |\n',
-            '\t|                                             |\n',
-            '\t|                                             |\n',
-            '\t|                                             |\n',
-            '\t|                                             |\n',
-            '\t|                                             |\n',
-            '\t|                                             |\n',
-            '\t-----------------------------------------------\n'
-        ]
-
-        # 親クラス呼び出し
-        super().__init__(stdscr, header_list, main_contents_list, [])
-
-
-class WindowManager:
-    """画面管理クラス
-    """
-    def __init__(self, stdscr) -> None:
-        """コンストラクタ
-
-        Args:
-            stdscr (any): 標準スクリーン
-        """
-        self.stdscr = stdscr
-
-    def addstr(self, text:str, arg = None) -> None:
-        """画面出力文字の追加
-
-        Args:
-            text (str): 画面出力文字
-        """
-        if arg is None:
-            self.stdscr.addstr(text)
-        
-        else:
-            self.stdscr.addstr(text, arg)
-
-    def refresh(self) -> None:
-        """画面を更新
-        """
-        
-
-    def clear(self) -> None:
-        """画面をクリア
-        """
-        
 
 def main(stdscr):
     ## インスタンス生成 ###
