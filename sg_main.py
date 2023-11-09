@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import copy
 import curses
 import random
 import time
@@ -59,6 +58,7 @@ class SnakeGame:
                 self.game_window_proc()
                 # 設定画面のヘッダー情報取得
                 self.setting_window_proc()
+                
 
                 if self.menu_state == MenuState.CLOSE_APP:
                     break
@@ -138,15 +138,16 @@ class SnakeGame:
                 # 1つずつ配列を取り出し、1つの配列の中の1文字を取り出す
                 for x, char in enumerate(contents):
                     # 蛇の頭配置判定
-                    if x == snake.snake_pos[0] and \
-                       y == snake.snake_pos[1]:
+                    if x == snake.get_x() and \
+                       y == snake.get_y():
                         # new_textに追加することにより空白を文字に置き換える
-                        new_text += snake.snake_head_char
+                        new_text += snake.get_snake_head()
                         continue
                     else:
                         new_text += char
-                
+
                 self.stdscr.addstr(new_text)
+            
 
             # 画面更新
             self.stdscr.refresh()
@@ -159,11 +160,20 @@ class SnakeGame:
                 self.stdscr.clear()
                 break
             elif key == KeyData.UP:
-                pass
+                snake.move_up()
             elif key == KeyData.DOWN:
-                pass
+                snake.move_down()
+            elif key == KeyData.RIGHT:
+                snake.move_right()
+            elif key == KeyData.LEFT:
+                snake.move_left()
+            elif key == KeyData.ENTER or key == KeyData.ESC:
+                # NOTE: [ESC], [Enter]キーで終了
+                self.stdscr.nodelay(False)
+            # 上記で指定したキー以外が入力されるとここの処理に入る
             else:
-                pass
+                # NOTE: デバック用
+                self.stdscr.addstr(f'{key}')
 
             # 標準出力画面の情報をクリアする
             self.stdscr.clear()
@@ -206,6 +216,8 @@ class SnakeGame:
 
             # 標準出力画面の情報をクリアする
             self.stdscr.clear()
+    
+
 
 
 def main(stdscr):
