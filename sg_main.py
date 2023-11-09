@@ -8,6 +8,7 @@ import time
 from curses import wrapper
 from typing import Any
 
+from sg_food import Food
 from sg_game_window import GameWindow
 from sg_input_key_manager import KeyData, InputKeyManager
 from sg_setting_window import SettingWindow
@@ -119,9 +120,13 @@ class SnakeGame:
         """
         # インスタンス化
         snake = Snake()
+        food = Food()
+
         # 現在のメニュー状態がゲームスタート状態じゃなければ以下の処理をスキップ
         if self.menu_state != MenuState.GAME_START:
             return
+
+        self.stdscr.nodelay(True)
 
         # ゲーム画面を持続させるためのループ
         while True:
@@ -141,10 +146,26 @@ class SnakeGame:
                     if x == snake.get_x() and \
                        y == snake.get_y():
                         # new_textに追加することにより空白を文字に置き換える
-                        new_text += snake.get_snake_head()
+                        new_text += snake.get_head_char()
                         continue
-                    else:
-                        new_text += char
+
+                    if snake.get_x() == food.get_x() and \
+                       snake.get_y() == food.get_y():
+                        while True:
+                            food.set_random_pos()
+                            # 餌の位置と蛇の頭の位置が一緒の場合はこれ以降の処理を行わずwhile文のブロックの先頭に戻る
+                            if food.get_pos() == snake.get_pos():
+                                continue
+                            else:
+                                break
+                    
+                    # 蛇の餌配置判定
+                    if x == food.get_x() and \
+                        y == food.get_y():
+                        new_text += food.get_food_char()
+                        continue
+
+                    new_text += char
 
                 self.stdscr.addstr(new_text)
             
@@ -170,6 +191,7 @@ class SnakeGame:
             elif key == KeyData.ENTER or key == KeyData.ESC:
                 # NOTE: [ESC], [Enter]キーで終了
                 self.stdscr.nodelay(False)
+                break
             # 上記で指定したキー以外が入力されるとここの処理に入る
             else:
                 # NOTE: デバック用

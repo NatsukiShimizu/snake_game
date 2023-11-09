@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import copy
-
-from sg_input_key_manager import KeyData, InputKeyManager
+from sg_input_key_manager import KeyData
 
 class Snake:
     """蛇クラス
@@ -26,18 +24,33 @@ class Snake:
         self.is_move = False
 
     def get_x(self) -> int:
+        """蛇のx座標を取得
+        """
         return self.snake_pos[0]
     
     def __set_x(self, x: int) -> None:
+        """蛇のx座標を設定
+        """
         self.snake_pos[0] = x
     
     def get_y(self) -> int:
+        """蛇のy座標を取得
+        """
         return self.snake_pos[1]
     
     def __set_y(self, y: int) -> None:
+        """蛇のy座標を設定
+        """
         self.snake_pos[1] = y
 
-    def get_snake_head(self) -> str:
+    def get_pos(self) -> list:
+        """蛇の位置を取得
+        """
+        return self.snake_pos
+
+    def get_head_char(self) -> str:
+        """蛇の頭を取得
+        """
         return self.snake_head_char
         
     def move_up(self) -> None:
