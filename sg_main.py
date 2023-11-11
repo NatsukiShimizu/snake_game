@@ -137,33 +137,47 @@ class SnakeGame:
 
             # コンテンツ情報取得
             main_contents = self.game_window.get_main_contents()
+
+            # 蛇の体情報をソート
+            snake.sort_body_pos()
+            # 蛇の体の配列の要素数を取得
+            snake.get_length_body_pos()
+
             for y, contents in enumerate(main_contents):
                 new_text = ''
 
                 # 1つずつ配列を取り出し、1つの配列の中の1文字を取り出す
                 for x, char in enumerate(contents):
-                    # 蛇の頭配置判定
-                    if x == snake.get_x() and \
-                       y == snake.get_y():
-                        # new_textに追加することにより空白を文字に置き換える
-                        new_text += snake.get_head_char()
-                        continue
-
-                    if snake.get_x() == food.get_x() and \
-                       snake.get_y() == food.get_y():
+                    # 食べ物が食べられたかor配置されていないかの判定
+                    if snake.get_head_x() == food.get_x() and \
+                       snake.get_head_y() == food.get_y():
                         while True:
-                            food.set_random_pos()
+                            food.update_random_pos()
                             # 餌の位置と蛇の頭の位置が一緒の場合はこれ以降の処理を行わずwhile文のブロックの先頭に戻る
-                            if food.get_pos() == snake.get_pos():
+                            if food.get_pos() == snake.get_head_pos():
                                 continue
                             else:
                                 break
                     
                     # 蛇の餌配置判定
                     if x == food.get_x() and \
-                        y == food.get_y():
+                       y == food.get_y():
                         new_text += food.get_food_char()
                         continue
+
+                    # 蛇の頭配置判定
+                    if x == snake.get_head_x() and \
+                       y == snake.get_head_y():
+                        # new_textに追加することにより空白を文字に置き換える
+                        new_text += snake.get_head_char()
+                        continue
+
+                    # 蛇の体配置判定
+                    # if x == snake.get_body_x() and \
+                    #    y == snake.get_body_y():
+                    #     # new_textに追加することにより空白を文字に置き換える
+                    #     new_text += snake.get_head_char()
+                    #     continue
 
                     new_text += char
 
