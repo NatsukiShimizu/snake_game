@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import random
-
 from sg_snake import Snake
 
 class Food:

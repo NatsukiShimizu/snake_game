@@ -173,11 +173,16 @@ class SnakeGame:
                         continue
 
                     # 蛇の体配置判定
-                    # if x == snake.get_body_x() and \
-                    #    y == snake.get_body_y():
-                    #     # new_textに追加することにより空白を文字に置き換える
-                    #     new_text += snake.get_head_char()
-                    #     continue
+                    # 配列にアクセスする時の要素数を超えないようにする判定
+                    # NOTE:test_list = [1, 2] -> test_list[2]のような範囲外のアクセスを防ぐ
+                    body_pos_idx_cnt = 0
+                    if body_pos_idx_cnt < snake.get_length_body_pos():
+                        if x == snake.get_body_x(body_pos_idx_cnt) and \
+                           y == snake.get_body_y(body_pos_idx_cnt):
+                            # new_textに追加することにより空白を文字に置き換える
+                            new_text += snake.get_body_char()
+                            body_pos_idx_cnt += 1
+                            continue
 
                     new_text += char
 
