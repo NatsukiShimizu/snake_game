@@ -59,7 +59,6 @@ class SnakeGame:
                 self.game_window_proc()
                 # 設定画面のヘッダー情報取得
                 self.setting_window_proc()
-                
 
                 if self.menu_state == MenuState.CLOSE_APP:
                     break
@@ -86,7 +85,7 @@ class SnakeGame:
             for menu in top_menu:
                 if menu[3] is None:
                     self.stdscr.addstr(menu[0], menu[1], menu[2])
-                
+
                 else:
                     self.stdscr.addstr(menu[0], menu[1], menu[2], menu[3])
 
@@ -141,7 +140,7 @@ class SnakeGame:
             # 蛇の体情報をソート
             snake.sort_body_pos()
             # 蛇の体の配列の要素数を取得
-            snake.get_length_body_pos()
+            body_pos_idx_cnt = 0
 
             for y, contents in enumerate(main_contents):
                 new_text = ''
@@ -158,7 +157,7 @@ class SnakeGame:
                                 continue
                             else:
                                 break
-                    
+
                     # 蛇の餌配置判定
                     if x == food.get_x() and \
                        y == food.get_y():
@@ -175,7 +174,6 @@ class SnakeGame:
                     # 蛇の体配置判定
                     # 配列にアクセスする時の要素数を超えないようにする判定
                     # NOTE:test_list = [1, 2] -> test_list[2]のような範囲外のアクセスを防ぐ
-                    body_pos_idx_cnt = 0
                     if body_pos_idx_cnt < snake.get_length_body_pos():
                         if x == snake.get_body_x(body_pos_idx_cnt) and \
                            y == snake.get_body_y(body_pos_idx_cnt):
@@ -187,10 +185,12 @@ class SnakeGame:
                     new_text += char
 
                 self.stdscr.addstr(new_text)
-            
 
-            # 画面更新
-            self.stdscr.refresh()
+             # フッター情報取得
+            footer = self.game_window.get_footer()
+            for f in footer:
+                self.stdscr.addstr(f)
+
             key = self.input_key_mng.getch()
 
             # エンター/esc入力
@@ -198,6 +198,8 @@ class SnakeGame:
                 # ゲーム画面を終了
                 # 標準出力画面の情報をクリアする
                 self.stdscr.clear()
+                # NOTE: [ESC], [Enter]キーで終了
+                self.stdscr.nodelay(False)
                 break
             elif key == KeyData.UP:
                 snake.move_up()
@@ -207,18 +209,16 @@ class SnakeGame:
                 snake.move_right()
             elif key == KeyData.LEFT:
                 snake.move_left()
-            elif key == KeyData.ENTER or key == KeyData.ESC:
-                # NOTE: [ESC], [Enter]キーで終了
-                self.stdscr.nodelay(False)
-                break
             # 上記で指定したキー以外が入力されるとここの処理に入る
             else:
-                # NOTE: デバック用
-                self.stdscr.addstr(f'{key}')
+                # NOTE: 何もしない
+                pass
 
             # 標準出力画面の情報をクリアする
             self.stdscr.clear()
-    
+            # 画面更新
+            self.stdscr.refresh()
+
     def setting_window_proc(self) -> None:
         """設定画面処理
         """
@@ -257,8 +257,6 @@ class SnakeGame:
 
             # 標準出力画面の情報をクリアする
             self.stdscr.clear()
-    
-
 
 
 def main(stdscr):

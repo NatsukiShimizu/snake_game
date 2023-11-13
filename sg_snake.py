@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import copy
 from sg_input_key_manager import KeyData
 
 class Snake:
@@ -19,8 +20,7 @@ class Snake:
             [self.head_pos[0]-1, self.head_pos[1]],
             [self.head_pos[0]-2, self.head_pos[1]]
         ]
-        # 
-        body_pos_idx_cnt = 0
+        self.sorted_body_pos_list = []
         # 蛇が進む方向
         self.cusor_direction = KeyData.RIGHT
         # 体が動かせるか動かせないかを判断するフラグ
@@ -49,7 +49,7 @@ class Snake:
         Returns:
             int: 蛇の体のx座標
         """
-        return self.body_pos_list[index][0]
+        return self.sorted_body_pos_list[index][0]
     
     def get_body_y(self, index: int) -> int:
         """蛇の体のy座標を取得
@@ -57,7 +57,7 @@ class Snake:
         Returns:
             int: 蛇の体のy座標
         """
-        return self.body_pos_list[index][1]
+        return self.sorted_body_pos_list[index][1]
 
     def get_head_pos(self) -> list:
         """蛇の頭の位置を取得
@@ -95,7 +95,7 @@ class Snake:
         """蛇の体を昇順でソートする
         """
         # 蛇の体が追加できるようにy座標の数字が小さい順位並べ替える
-        self.body_pos_list = sorted(self.body_pos_list, key=lambda x:(x[1], x[0]))
+        self.sorted_body_pos_list = sorted(self.body_pos_list, key=lambda x:(x[1], x[0]))
 
     def get_length_body_pos(self) -> int:
         """蛇の体の配列の要素数を取得
@@ -117,6 +117,7 @@ class Snake:
         # snake_posのy座標が1以上の場合は-1して上に移動、体がついていくようにTrueに設定
         # NOTE: y座標の場合、下に行くほど数がでかくなる
         else:
+            self.__update_body_pos()
             self.__set_head_y(self.get_head_y() - 1)
             self.__set_enable_move(True)
 
@@ -132,10 +133,11 @@ class Snake:
         # snake_posのy座標が1以上の場合は-1して上に移動、体がついていくようにTrueに設定
         # NOTE: y座標の場合、下に行くほど数がでかくなる
         else:
+            self.__update_body_pos()
             self.__set_head_y(self.get_head_y() + 1)
             self.__set_enable_move(True)
 
-        self.set_direction(KeyData.UP)
+        self.set_direction(KeyData.DOWN)
 
     def move_right(self) -> None:
         """蛇を右に移動
@@ -149,6 +151,7 @@ class Snake:
         # snake_posのx座標が46以下の場合は＋1して右に移動し、体がついていくようにTrueに設定
         # NOTE: x座標の場合、右に行くほど数がでかくなる
         else:
+            self.__update_body_pos()
             self.__set_head_x(self.get_head_x() + 1)
             self.__set_enable_move(True)
         
@@ -166,6 +169,7 @@ class Snake:
         # snake_pos[0]は蛇の位置のx座標を示す
         # snake_posのx座標が46以上の場合は46で設定し、体が動かないようにFalseに設定
         else:
+            self.__update_body_pos()
             self.__set_head_x(self.get_head_x() - 1)
             self.__set_enable_move(True)
 
@@ -187,14 +191,6 @@ class Snake:
         """
         return self.cusor_direction
     
-    def __set_enable_move(self, enable:bool) -> None:
-        """蛇の移動可不可状態を設定
-
-        Args:
-            enable (bool): 蛇の移動可不可状態
-        """
-        self.is_move = enable
-
     def get_is_move(self) -> bool:
         """蛇の移動可不可状態を取得
 
@@ -202,6 +198,14 @@ class Snake:
             bool: 蛇の移動可不可状態
         """
         return self.is_move
+
+    def __set_enable_move(self, enable:bool) -> None:
+        """蛇の移動可不可状態を設定
+
+        Args:
+            enable (bool): 蛇の移動可不可状態
+        """
+        self.is_move = enable
     
     def __set_head_x(self, x: int) -> None:
         """蛇の頭x座標を設定 (内部処理用)
@@ -236,3 +240,15 @@ class Snake:
             y (int): 蛇の体y座標
         """
         self.body_pos_list[index][1] = y
+
+    def __update_body_pos(self) -> None:
+        """蛇の体の位置情報更新
+        """
+        _priv_body_pos = copy.deepcopy(self.get_body_pos())
+        for i, _ in enumerate(_priv_body_pos):
+            if i == 0:
+                self.__set_body_x(i, self.get_head_x())
+                self.__set_body_y(i, self.get_head_y())
+            else:
+                self.__set_body_x(i, _priv_body_pos[i-1][0])
+                self.__set_body_y(i, _priv_body_pos[i-1][1])
