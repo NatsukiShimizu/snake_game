@@ -162,7 +162,7 @@ class SnakeGame:
                                 continue
                             else:
                                 snake.add_body_pos()
-                                speed.set_speed(speed.get_speed() * 1.1)
+                                speed.set_speed(speed.get_speed() * 1.05)
                                 break
                     
                     # ゲームオーバー
@@ -244,11 +244,11 @@ class SnakeGame:
                 snake.move_left()
             # 上記で指定したキー以外が入力されるとここの処理に入る
             else:
-                # NOTE: 何もしない
-                pass
+                # NOTE: 自動移動
+                snake.auto_move()
             
             # 蛇の速度設定
-            time.sleep(0.5 / speed.get_speed())
+            time.sleep(0.1 / speed.get_speed())
             # 標準出力画面の情報をクリアする
             self.stdscr.clear()
             # 画面更新

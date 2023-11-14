@@ -29,6 +29,13 @@ class Snake:
         # 体が動かせるか動かせないかを判断するフラグ
         # NOTE:最初にTrueにすると本来欲しいキー入力以外でも体が動こうとする処理に入ってしまうためFalseで定義する
         self.is_move = False
+        # 自動移動用の情報
+        self.auto_move_info = {
+            KeyData.UP: self.move_up,
+            KeyData.DOWN: self.move_down,
+            KeyData.RIGHT: self.move_right,
+            KeyData.LEFT: self.move_left
+        }
 
     def get_head_x(self) -> int:
         """蛇の頭のx座標を取得
@@ -194,6 +201,13 @@ class Snake:
             self.__set_enable_move(True)
 
         self.set_direction(KeyData.LEFT)
+
+    def auto_move(self) -> None:
+        """蛇を自動移動
+        """
+        _direct = self.get_direction()
+        _move_func = self.auto_move_info[_direct]
+        _move_func()
 
     def set_direction(self, direct:KeyData) -> None:
         """蛇の自動で進む方向を設定
