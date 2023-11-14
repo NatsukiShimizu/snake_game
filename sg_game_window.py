@@ -55,6 +55,11 @@ class GameWindow(BaseWindow):
             '\t-----------------------------------------------\n'
         ]
 
+        self.game_over_footer_list = [
+            '\n',
+            '\t      <--  何かキーを押してください  -->\n',
+        ]
+
         # 親クラス呼び出し
         super().__init__(stdscr, header_list, main_contents_list, footer_list)
 
@@ -64,4 +69,4 @@ class GameWindow(BaseWindow):
         Returns:
             list: ゲーム画面のゲームオーバー情報
         """
-        return self.game_over_list
+        return self.game_over_list, self.game_over_footer_list

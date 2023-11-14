@@ -13,6 +13,7 @@ from sg_game_window import GameWindow
 from sg_input_key_manager import KeyData, InputKeyManager
 from sg_setting_window import SettingWindow
 from sg_snake import Snake
+from sg_speed import Speed
 from sg_top_window import MenuState, TopWindow
 
 
@@ -118,8 +119,9 @@ class SnakeGame:
         """ゲーム画面処理
         """
         # インスタンス化
-        snake = Snake()
         food = Food()
+        snake = Snake()
+        speed = Speed()
 
         # 現在のメニュー状態がゲームスタート状態じゃなければ以下の処理をスキップ
         if self.menu_state != MenuState.GAME_START:
@@ -155,8 +157,39 @@ class SnakeGame:
                             # 餌の位置と蛇の頭の位置が一緒の場合はこれ以降の処理を行わずwhile文のブロックの先頭に戻る
                             if food.get_pos() == snake.get_head_pos():
                                 continue
+                            # 餌の位置と蛇の体の位置が一緒の場合も同様
+                            elif snake.is_exists_body(food.get_pos()):
+                                continue
                             else:
+                                snake.add_body_pos()
+                                speed.set_speed(speed.get_speed() * 1.1)
                                 break
+                    
+                    # ゲームオーバー
+                    if snake.is_exists_body(snake.get_head_pos()):
+                        self.stdscr.clear()
+                        self.stdscr.nodelay(False)
+                        
+                        # ヘッダー情報取得
+                        header = self.game_window.get_header()
+                        for h in header:
+                            self.stdscr.addstr(h)
+                        
+                        # コンテンツ情報取得
+                        game_over_wnd, game_over_footer = self.game_window.get_game_over_wnd()
+                        for g in game_over_wnd:
+                            self.stdscr.addstr(g)
+                        
+                        # フッター情報取得
+                        for f in game_over_footer:
+                            self.stdscr.addstr(f)
+                        
+                        # 画面更新
+                        self.stdscr.refresh()
+                        self.input_key_mng.getch()
+                        self.stdscr.clear()
+                        return
+                        
 
                     # 蛇の餌配置判定
                     if x == food.get_x() and \
@@ -186,7 +219,7 @@ class SnakeGame:
 
                 self.stdscr.addstr(new_text)
 
-             # フッター情報取得
+            # フッター情報取得
             footer = self.game_window.get_footer()
             for f in footer:
                 self.stdscr.addstr(f)
@@ -213,7 +246,9 @@ class SnakeGame:
             else:
                 # NOTE: 何もしない
                 pass
-
+            
+            # 蛇の速度設定
+            time.sleep(0.5 / speed.get_speed())
             # 標準出力画面の情報をクリアする
             self.stdscr.clear()
             # 画面更新

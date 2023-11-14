@@ -20,6 +20,9 @@ class Snake:
             [self.head_pos[0]-1, self.head_pos[1]],
             [self.head_pos[0]-2, self.head_pos[1]]
         ]
+        self.add_body_pos_list = []
+        # body_pos_listをソートしたでーたを格納するよう
+        # NOTE: 空リストで初期化
         self.sorted_body_pos_list = []
         # 蛇が進む方向
         self.cusor_direction = KeyData.RIGHT
@@ -91,6 +94,23 @@ class Snake:
         """
         return self.body_pos_list
     
+    def is_exists_body(self, pos: list) -> bool:
+        """蛇の体が指定した位置に存在するかチェック
+
+        Args:
+            pos (list): _description_
+
+        Returns:
+            bool: True: 存在する / False: 存在しない
+        """
+        return pos in self.sorted_body_pos_list
+    
+    def add_body_pos(self) -> None:
+        """蛇の最後尾に追加
+        """
+        self.body_pos_list.append(self.add_body_pos_list)
+        self.sort_body_pos()
+
     def sort_body_pos(self) -> None:
         """蛇の体を昇順でソートする
         """
@@ -252,3 +272,6 @@ class Snake:
             else:
                 self.__set_body_x(i, _priv_body_pos[i-1][0])
                 self.__set_body_y(i, _priv_body_pos[i-1][1])
+    
+        # 暫定
+        self.add_body_pos_list = _priv_body_pos[-1]
