@@ -31,12 +31,12 @@ class TopWindow(BaseWindow):
 
         self.selected_game_start_menu = [
             [4, 20, '<-- ゲームスタート -->\n', curses.A_STANDOUT],
-            [5, 20, '<--      設定      -->', None]
+            [6, 20, '<--      設定      -->', None]
         ]
 
         self.selected_setting_menu = [
             [4, 20, '<-- ゲームスタート -->\n', None],
-            [5, 20, '<--      設定      -->', curses.A_STANDOUT]
+            [6, 20, '<--      設定      -->', curses.A_STANDOUT]
         ]
 
         # 親クラス呼び出し

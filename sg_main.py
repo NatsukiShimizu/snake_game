@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import curses
-import random
 import time
 
 from curses import wrapper
@@ -11,10 +10,11 @@ from typing import Any
 from sg_food import Food
 from sg_game_window import GameWindow
 from sg_input_key_manager import KeyData, InputKeyManager
-from sg_setting_window import SettingWindow
+from sg_setting_window import SettingWindow, SubMenuState
 from sg_snake import Snake
 from sg_speed import Speed
 from sg_top_window import MenuState, TopWindow
+
 
 
 class SnakeGame:
@@ -38,6 +38,7 @@ class SnakeGame:
         self.top_window     = TopWindow(stdscr)
         self.game_window    = GameWindow(stdscr)
         self.setting_window = SettingWindow(stdscr)
+        self.sub_menu_state  = SubMenuState.SPEED
         self.menu_state     = MenuState.GAME_START
 
     def initialise(self) -> None:
@@ -268,10 +269,13 @@ class SnakeGame:
             for h in header:
                 self.stdscr.addstr(h)
 
-            # コンテンツ情報取得
-            main_contents = self.setting_window.get_main_contents()
-            for contents in main_contents:
-                self.stdscr.addstr(contents)
+            # 設定画面のメニュー情報取得
+            setting_menu = self.setting_window.select_menu(self.sub_menu_state)
+            for menu in setting_menu:
+                if menu[3] is None:
+                    self.stdscr.addstr(menu[0], menu[1], menu[2])
+                else:
+                    self.stdscr.addstr(menu[0], menu[1], menu[2], menu[3])
 
             # 画面更新
             self.stdscr.refresh()
@@ -283,10 +287,20 @@ class SnakeGame:
                 # 標準出力画面の情報をクリアする
                 self.stdscr.clear()
                 break
+
             elif key == KeyData.UP:
-                pass
+                # サブメニュー状態がステータスクラスの最小値なら最小値の状態を設定する
+                if self.sub_menu_state <= SubMenuState.SPEED:
+                    self.sub_menu_state = SubMenuState.SPEED
+                else:
+                    self.sub_menu_state -= 1
+
             elif key == KeyData.DOWN:
-                pass
+                # サブメニュー状態がステータスクラスの最大値なら最大値の状態を設定する
+                if SubMenuState.AUDIO <= self.sub_menu_state:
+                    self.sub_menu_state = SubMenuState.AUDIO
+                else:
+                    self.sub_menu_state += 1
             else:
                 pass
 
