@@ -2,11 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import curses
+import threading
 import time
 
 from curses import wrapper
 from typing import Any
 
+from music import Music
 from sg_food import Food
 from sg_game_window import GameWindow
 from sg_input_key_manager import KeyData, InputKeyManager
@@ -20,6 +22,8 @@ from sg_top_window import MenuState, TopWindow
 class SnakeGame:
     """スネークゲームクラス
     """
+    IS_TERMINATE = False
+
     def __init__(self, stdscr) -> None:
         """コンストラクタ
             コンストラクタ：クラス内で使う変数を定義するため
@@ -40,6 +44,8 @@ class SnakeGame:
         self.setting_window = SettingWindow(stdscr)
         self.sub_menu_state  = SubMenuState.SPEED
         self.menu_state     = MenuState.GAME_START
+        self.music = Music()
+
 
     def initialise(self) -> None:
         """初期化処理
@@ -123,6 +129,10 @@ class SnakeGame:
         food = Food()
         snake = Snake()
         speed = Speed()
+
+        # 音楽開始
+        self._play_music_thread = threading.Thread(target=self.music.play_music)
+        self._play_music_thread.start()
 
         # 現在のメニュー状態がゲームスタート状態じゃなければ以下の処理をスキップ
         if self.menu_state != MenuState.GAME_START:
@@ -234,7 +244,12 @@ class SnakeGame:
                 self.stdscr.clear()
                 # NOTE: [ESC], [Enter]キーで終了
                 self.stdscr.nodelay(False)
+                # 音楽を停止させる
+                self.music.stop_music()
+                # 音楽スレッド終了
+                self._play_music_thread.join()
                 break
+
             elif key == KeyData.UP:
                 snake.move_up()
             elif key == KeyData.DOWN:
